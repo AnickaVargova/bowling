@@ -36,7 +36,10 @@ const testSada1 = [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10];
 const testSada2 = [9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0];
 //90
 const testSada3 = [9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9];
-//90
+
+const testSada4 = [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10];
+const testSada5 = [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5];
+const testSada6 = [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10];
 
 function testSequence(sequence) {
   newGame();
@@ -63,34 +66,40 @@ function testCurrentState(arr) {
 }
 
 describe("testScore", () => {
-  test("getTotalScore0", () => {
+  test("10 pairs with spare and a final", () => {
     expect(testSequence(testSada0)).toBe(150);
   });
-  test("getTotalScore1", () => {
+  test("ordinary sequence", () => {
     expect(testSequence(testSada1)).toBe(300);
   });
-  test("getTotalScore2", () => {
+  test("maximum sequence", () => {
     expect(testSequence(testSada2)).toBe(90);
   });
 });
 
 describe("gameFinished", () => {
-  test("testGameFinished0", () => {
+  test("10 pairs with spare and a final", () => {
     expect(testGameFinished(testSada0)).toBe(true);
   });
-  test("testGameFinished1", () => {
+  test("ordinary sequence", () => {
     expect(testGameFinished(testSada1)).toBe(true);
   });
-  test("testGameFinished2", () => {
+  test("maximum sequence ", () => {
     expect(testGameFinished(testSada2)).toBe(true);
   });
-  test("testGameFinished3", () => {
+  test("incomplete ordinary sequence", () => {
     expect(testGameFinished(testSada3)).toBe(false);
+  });
+  test("incomplete maximum sequence", () => {
+    expect(testGameFinished(testSada4)).toBe(false);
+  });
+  test("10 pairs with spare without a final", () => {
+    expect(testGameFinished(testSada5)).toBe(false);
   });
 });
 
 describe("currentState", () => {
-  test("simpleSequence", () => {
+  test("simple sequence", () => {
     expect(testCurrentState([2, 3, 4, 5])).toEqual([
       { frameId: 1, rolledPins: [2, 3], frameScore: 5 },
       { frameId: 2, rolledPins: [4, 5], frameScore: 9 },
@@ -98,7 +107,7 @@ describe("currentState", () => {
   });
   test("sequence with spare", () => {
     expect(testCurrentState([5, 5, 3, 6])).toEqual([
-      { frameId: 1, rolledPins: [5, 5], frameScore: 13 },
+      { frameId: 1, rolledPins: [5, 5], frameScore: 13, isSpare: true },
       { frameId: 2, rolledPins: [3, 6], frameScore: 9 },
     ]);
   });
@@ -109,7 +118,6 @@ describe("currentState", () => {
         rolledPins: [10],
         frameScore: 19,
         isStrike: true,
-        addingCounter: 2,
       },
       { frameId: 2, rolledPins: [3, 6], frameScore: 9 },
     ]);
@@ -121,16 +129,17 @@ describe("currentState", () => {
         rolledPins: [10],
         frameScore: 23,
         isStrike: true,
-        addingCounter: 2,
       },
       {
         frameId: 2,
         rolledPins: [10],
         frameScore: 19,
         isStrike: true,
-        addingCounter: 2,
       },
       { frameId: 3, rolledPins: [3, 6], frameScore: 9 },
     ]);
+  });
+  test("too long sequence, new game started", () => {
+    expect(testCurrentState(testSada6)).toEqual([]);
   });
 });

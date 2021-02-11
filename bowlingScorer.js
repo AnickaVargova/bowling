@@ -1,18 +1,13 @@
 let totalScore = 0;
 let frameNumber = 1;
-let turnNumber = 1;
-let isSpare = false;
-let isTenth = false;
 let gameOver = false;
 let scoreTable = [];
 
 function newGame() {
+  console.log("Game started.");
   scoreTable = [];
   frameNumber = 1;
-  turnNumber = 1;
   totalScore = 0;
-  isSpare = false;
-  isTenth = false;
   gameOver = false;
 }
 
@@ -29,62 +24,77 @@ function getTotalScore() {
 }
 
 function isGameFinished() {
+  gameOver
+    ? console.log("Game is finished.")
+    : console.log("Game is not finished yet.");
   return gameOver;
 }
 
+function getPrevious() {
+  return scoreTable.length > 1 && scoreTable[scoreTable.length - 2];
+}
+
+function getBeforePrevious() {
+  return scoreTable.length > 2 && scoreTable[scoreTable.length - 3];
+}
+
 function throwBowl(count) {
-  let current = scoreTable.length && scoreTable[scoreTable.length - 1];
-  let beforeCurrent =
-    scoreTable.length > 1 && scoreTable[scoreTable.length - 2];
-  if (turnNumber === 1) {
-    let frame = {
-      frameId: frameNumber,
-      rolledPins: [count],
-      frameScore: count,
-    };
-    if (count === 10) {
-      frame.isStrike = true;
-      frame.addingCounter = 0;
-      frameNumber++;
-    }
-    if (isSpare) {
-      current.frameScore += count;
-    }
-    if (current.isStrike) {
-      current.frameScore += count;
-      current.addingCounter++;
-    }
+  let currentFrame =
+    scoreTable.length && scoreTable[scoreTable.length && scoreTable.length - 1];
+  let isTenth = Boolean(scoreTable.length === 10);
+
+  if (!gameOver) {
     if (
-      beforeCurrent &&
-      beforeCurrent.isStrike &&
-      beforeCurrent.addingCounter < 2
+      (!isTenth &&
+        currentFrame &&
+        currentFrame.rolledPins.length < 2 &&
+        !currentFrame.isStrike) ||
+      isTenth
     ) {
-      beforeCurrent.frameScore += count;
-      beforeCurrent.addingCounter++;
+      currentFrame.rolledPins.push(count);
+      currentFrame.frameScore += count;
+      if (currentFrame.frameScore === 10) {
+        currentFrame.isSpare = true;
+      }
+
+      if (frameNumber < 10) {
+        frameNumber++;
+      } else {
+        if (!currentFrame.isSpare && !currentFrame.isStrike) {
+          gameOver = true;
+        } else {
+          if (currentFrame.rolledPins.length === 3) {
+            gameOver = true;
+          }
+        }
+      }
+    } else {
+      let frame = {
+        frameId: frameNumber,
+        rolledPins: [count],
+        frameScore: count,
+      };
+      if (count === 10) {
+        frame.isStrike = true;
+        frameNumber++;
+      }
+      scoreTable.push(frame);
+
+      if (getPrevious().isSpare) {
+        getPrevious().frameScore += count;
+      }
+
+      if (getPrevious().isStrike && getBeforePrevious().isStrike) {
+        getBeforePrevious().frameScore += count;
+      }
     }
-    scoreTable.push(frame);
-    if (scoreTable.length === 10) {
-      isTenth = true;
+
+    if (getPrevious().isStrike && currentFrame.rolledPins.length <= 2) {
+      getPrevious().frameScore += count;
     }
-    if (!frame.isStrike || (frame.isStrike && isTenth)) {
-      turnNumber++;
-    }
-    isSpare = false;
-  } else if (turnNumber === 2) {
-    current.rolledPins = [...current.rolledPins, count];
-    if (beforeCurrent.isStrike) {
-      beforeCurrent.frameScore += count;
-      beforeCurrent.addingCounter++;
-    }
-    current.frameScore = current.frameScore + count;
-    isSpare = current.frameScore === 10 ? true : false;
-    frameNumber++;
-    isTenth && (isSpare || current.isStrike) ? turnNumber++ : (turnNumber = 1);
-    gameOver = isTenth && !isSpare && !current.isStrike ? true : false;
-  } else if (turnNumber === 3) {
-    current.rolledPins = [...current.rolledPins, count];
-    current.frameScore += count;
-    gameOver = true;
+  } else {
+    newGame();
+    console.log("Your sequence is too long. Start new game.");
   }
 }
 
