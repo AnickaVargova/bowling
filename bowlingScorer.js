@@ -1,4 +1,4 @@
-let totalScore = 0;
+let score = 0;
 let frameNumber = 1;
 let gameOver = false;
 let scoreTable = [];
@@ -7,20 +7,26 @@ function newGame() {
   console.log("Game started.");
   scoreTable = [];
   frameNumber = 1;
-  totalScore = 0;
+  score = 0;
   gameOver = false;
 }
 
 function getCurrentState() {
+  console.log(scoreTable);
   return scoreTable;
 }
 
-function getTotalScore() {
-  totalScore = scoreTable.reduce(
-    (total, current) => total + current.frameScore,
-    0
-  );
-  return totalScore;
+function getScore() {
+  score = scoreTable.reduce((total, current) => total + current.frameScore, 0);
+  if (!gameOver) {
+    console.log(
+      `Your current score is ${score}. It may not reflect spare and strike bonuses for the last two rounds.`
+    );
+  } else {
+    console.log(`Your total score is ${score}.`);
+  }
+
+  return score;
 }
 
 function isGameFinished() {
@@ -101,8 +107,7 @@ function throwBowl(count) {
 module.exports = {
   newGame,
   getCurrentState,
-  getTotalScore,
+  getScore,
   isGameFinished,
   throwBowl,
-  scoreTable,
 };

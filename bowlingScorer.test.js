@@ -2,7 +2,7 @@ const { describe, test } = require("@jest/globals");
 const {
   newGame,
   getCurrentState,
-  getTotalScore,
+  getScore,
   isGameFinished,
   throwBowl,
 } = require("./bowlingScorer");
@@ -46,7 +46,7 @@ function testSequence(sequence) {
   for (let item of sequence) {
     throwBowl(item);
   }
-  return getTotalScore();
+  return getScore();
 }
 
 function testGameFinished(sequence) {

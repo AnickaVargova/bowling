@@ -2,18 +2,18 @@
 const {
   newGame,
   getCurrentState,
-  getTotalScore,
+  getScore,
   isGameFinished,
   throwBowl,
 } = require("./bowlingScorer");
 
-// Exemple usage: run 'node index' in terminal.
+// Example usage: run 'node index' in terminal.
 newGame();
 throwBowl(1);
 throwBowl(3);
 throwBowl(10);
 throwBowl(5);
 throwBowl(3);
-console.log(getCurrentState());
+getCurrentState();
 isGameFinished();
-console.log(getTotalScore());
+getScore();
