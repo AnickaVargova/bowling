@@ -69,10 +69,10 @@ describe("testScore", () => {
   test("10 pairs with spare and a final", () => {
     expect(testSequence(testSada0)).toBe(150);
   });
-  test("ordinary sequence", () => {
+  test("maximum sequence", () => {
     expect(testSequence(testSada1)).toBe(300);
   });
-  test("maximum sequence", () => {
+  test("ordinary sequence", () => {
     expect(testSequence(testSada2)).toBe(90);
   });
 });
@@ -81,10 +81,10 @@ describe("gameFinished", () => {
   test("10 pairs with spare and a final", () => {
     expect(testGameFinished(testSada0)).toBe(true);
   });
-  test("ordinary sequence", () => {
+  test("maximum sequence", () => {
     expect(testGameFinished(testSada1)).toBe(true);
   });
-  test("maximum sequence ", () => {
+  test("ordinary sequence ", () => {
     expect(testGameFinished(testSada2)).toBe(true);
   });
   test("incomplete ordinary sequence", () => {
@@ -93,7 +93,7 @@ describe("gameFinished", () => {
   test("incomplete maximum sequence", () => {
     expect(testGameFinished(testSada4)).toBe(false);
   });
-  test("10 pairs with spare without a final", () => {
+  test("10 pairs with a spare without a final", () => {
     expect(testGameFinished(testSada5)).toBe(false);
   });
 });
@@ -105,13 +105,13 @@ describe("currentState", () => {
       { frameId: 2, rolledPins: [4, 5], frameScore: 9 },
     ]);
   });
-  test("sequence with spare", () => {
+  test("sequence with a spare", () => {
     expect(testCurrentState([5, 5, 3, 6])).toEqual([
       { frameId: 1, rolledPins: [5, 5], frameScore: 13, isSpare: true },
       { frameId: 2, rolledPins: [3, 6], frameScore: 9 },
     ]);
   });
-  test("sequence with strike", () => {
+  test("sequence with a strike", () => {
     expect(testCurrentState([10, 3, 6])).toEqual([
       {
         frameId: 1,
@@ -139,7 +139,7 @@ describe("currentState", () => {
       { frameId: 3, rolledPins: [3, 6], frameScore: 9 },
     ]);
   });
-  test("too long sequence", () => {
+  test("sequence exceeding maximum length", () => {
     expect(() => testCurrentState(testSada6)).toThrow("Game is over.");
   });
 });

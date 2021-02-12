@@ -7,13 +7,13 @@ const {
   throwBowl,
 } = require("./bowlingScorer");
 
-// Example usage: run 'node index' in terminal.
-newGame();
+//Usage example: run 'node index' in your terminal.
+newGame(true);
 throwBowl(1);
 throwBowl(3);
-throwBowl(10);
 throwBowl(5);
-throwBowl(3);
-getCurrentState();
-isGameFinished();
-getScore();
+throwBowl(10);
+
+console.log(getCurrentState());
+console.log(isGameFinished(true));
+console.log(getScore(true));

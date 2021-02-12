@@ -14,27 +14,50 @@ function newGame(verbose = false) {
 }
 
 function getCurrentState() {
-  console.log(scoreTable);
   return scoreTable;
 }
 
 function getScore(verbose = false) {
   score = scoreTable.reduce((total, current) => total + current.frameScore, 0);
+  let scoreWithoutCurrentFrameBonus = Boolean(
+    getCurrent().isSpare || (getCurrent().isStrike && !getPrevious().isStrike)
+  );
+  let scoreWithoutTwoFrameBonuses = Boolean(
+    getCurrent().isStrike && getPrevious().isStrike
+  );
+  let scoreWithoutPreviousFrameBonus = Boolean(
+    getCurrent().rolledPins.length === 1 && getPrevious().isStrike
+  );
 
   if (verbose) {
     if (!gameOver) {
-      console.log(
-        `Your current score is ${score}. It may not reflect spare and strike bonuses for the last two rounds.`
-      );
+      if (scoreWithoutCurrentFrameBonus) {
+        return `Your current score is ${score}. It doesn't include the bonus for the last frame.`;
+      } else if (scoreWithoutTwoFrameBonuses) {
+        return `Your current score is ${score}. The strike bonus for the last two frames is not complete.`;
+      } else if (scoreWithoutPreviousFrameBonus) {
+        return `Your current score is ${score}. The strike bonus for the previous frame is not complete.`;
+      }
     } else {
-      console.log(`Your total score is ${score}.`);
+      return `Your total score is ${score}.`;
     }
+  } else {
+    return score;
   }
-  return score;
 }
 
-function isGameFinished() {
-  return gameOver;
+function isGameFinished(verbose = false) {
+  if (verbose) {
+    return gameOver ? "Game is finished." : "Game is not finished.";
+  } else {
+    return gameOver;
+  }
+}
+
+function getCurrent() {
+  return (
+    scoreTable.length && scoreTable[scoreTable.length && scoreTable.length - 1]
+  );
 }
 
 function getPrevious() {
@@ -46,12 +69,11 @@ function getBeforePrevious() {
 }
 
 function throwBowl(count) {
-  let currentFrame =
-    scoreTable.length && scoreTable[scoreTable.length && scoreTable.length - 1];
+  let currentFrame = getCurrent();
   let isTenth = Boolean(scoreTable.length === 10);
 
   if (gameOver) {
-    throw new Error("Game is over.");
+    throw "Game is over.";
   } else {
     if (
       (!isTenth &&
@@ -62,6 +84,7 @@ function throwBowl(count) {
     ) {
       currentFrame.rolledPins.push(count);
       currentFrame.frameScore += count;
+
       if (currentFrame.frameScore === 10) {
         currentFrame.isSpare = true;
       }
@@ -97,6 +120,13 @@ function throwBowl(count) {
     if (getPrevious().isStrike && currentFrame.rolledPins.length <= 2) {
       getPrevious().frameScore += count;
     }
+
+    // if (
+    //   (!isTenth && currentFrame.frameScore > 10) ||
+    //   (isTenth && currentFrame.frameScore > 30)
+    // ) {
+    //   console.log(`${currentFrame.frameId} exceeded limit`);
+    // }
   }
 }
 module.exports = {
