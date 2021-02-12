@@ -66,14 +66,11 @@ function throwBowl(count) {
       }
       if (frameNumber < 10) {
         frameNumber++;
-      } else {
-        if (!currentFrame.isSpare && !currentFrame.isStrike) {
-          gameOver = true;
-        } else {
-          if (currentFrame.rolledPins.length === 3) {
-            gameOver = true;
-          }
-        }
+      } else if (
+        (!currentFrame.isSpare && !currentFrame.isStrike) ||
+        currentFrame.rolledPins.length === 3
+      ) {
+        gameOver = true;
       }
     } else {
       let frame = {
