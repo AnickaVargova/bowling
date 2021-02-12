@@ -139,7 +139,7 @@ describe("currentState", () => {
       { frameId: 3, rolledPins: [3, 6], frameScore: 9 },
     ]);
   });
-  test("too long sequence, new game started", () => {
-    expect(testCurrentState(testSada6)).toEqual([]);
+  test("too long sequence", () => {
+    expect(() => testCurrentState(testSada6)).toThrow("Game is over.");
   });
 });

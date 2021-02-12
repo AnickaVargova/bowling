@@ -49,7 +49,9 @@ function throwBowl(count) {
     scoreTable.length && scoreTable[scoreTable.length && scoreTable.length - 1];
   let isTenth = Boolean(scoreTable.length === 10);
 
-  if (!gameOver) {
+  if (gameOver) {
+    throw new Error("Game is over.");
+  } else {
     if (
       (!isTenth &&
         currentFrame &&
@@ -62,7 +64,6 @@ function throwBowl(count) {
       if (currentFrame.frameScore === 10) {
         currentFrame.isSpare = true;
       }
-
       if (frameNumber < 10) {
         frameNumber++;
       } else {
@@ -98,12 +99,8 @@ function throwBowl(count) {
     if (getPrevious().isStrike && currentFrame.rolledPins.length <= 2) {
       getPrevious().frameScore += count;
     }
-  } else {
-    newGame();
-    console.log("Your sequence is too long. Start new game.");
   }
 }
-
 module.exports = {
   newGame,
   getCurrentState,
