@@ -18,7 +18,14 @@ function getCurrentState() {
 }
 
 function getScore(verbose = false) {
-  score = scoreTable.reduce((total, current) => total + current.frameScore, 0);
+  score = scoreTable.reduce(
+    (total, current) =>
+      total +
+      current.frameScore +
+      (current.spareBonus ? current.spareBonus : 0) +
+      (current.strikeBonus ? current.strikeBonus : 0),
+    0
+  );
   let scoreWithoutCurrentFrameBonus = Boolean(
     getCurrent().isSpare || (getCurrent().isStrike && !getPrevious().isStrike)
   );
@@ -73,7 +80,7 @@ function throwBowl(count) {
   let isTenth = Boolean(scoreTable.length === 10);
 
   if (gameOver) {
-    throw "Game is over.";
+    throw new Error("Game is over.");
   } else {
     if (
       (!isTenth &&
@@ -109,24 +116,29 @@ function throwBowl(count) {
       scoreTable.push(frame);
 
       if (getPrevious().isSpare) {
-        getPrevious().frameScore += count;
+        getPrevious().spareBonus = count;
+        // getPrevious().frameScore += count;
       }
 
       if (getPrevious().isStrike && getBeforePrevious().isStrike) {
-        getBeforePrevious().frameScore += count;
+        // getBeforePrevious().frameScore += count;
+        getBeforePrevious().strikeBonus += count;
       }
     }
 
     if (getPrevious().isStrike && currentFrame.rolledPins.length <= 2) {
-      getPrevious().frameScore += count;
+      // getPrevious().frameScore += count;
+      getPrevious().strikeBonus
+        ? (getPrevious().strikeBonus += count)
+        : (getPrevious().strikeBonus = count);
     }
 
-    // if (
-    //   (!isTenth && currentFrame.frameScore > 10) ||
-    //   (isTenth && currentFrame.frameScore > 30)
-    // ) {
-    //   console.log(`${currentFrame.frameId} exceeded limit`);
-    // }
+    if (
+      (!isTenth && currentFrame.frameScore > 10) ||
+      (isTenth && currentFrame.frameScore > 30)
+    ) {
+      throw new Error("Maximum number of pins is exceeded.");
+    }
   }
 }
 module.exports = {

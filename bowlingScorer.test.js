@@ -107,7 +107,13 @@ describe("currentState", () => {
   });
   test("sequence with a spare", () => {
     expect(testCurrentState([5, 5, 3, 6])).toEqual([
-      { frameId: 1, rolledPins: [5, 5], frameScore: 13, isSpare: true },
+      {
+        frameId: 1,
+        rolledPins: [5, 5],
+        frameScore: 10,
+        isSpare: true,
+        spareBonus: 3,
+      },
       { frameId: 2, rolledPins: [3, 6], frameScore: 9 },
     ]);
   });
@@ -116,8 +122,9 @@ describe("currentState", () => {
       {
         frameId: 1,
         rolledPins: [10],
-        frameScore: 19,
+        frameScore: 10,
         isStrike: true,
+        strikeBonus: 9,
       },
       { frameId: 2, rolledPins: [3, 6], frameScore: 9 },
     ]);
@@ -127,14 +134,16 @@ describe("currentState", () => {
       {
         frameId: 1,
         rolledPins: [10],
-        frameScore: 23,
+        frameScore: 10,
         isStrike: true,
+        strikeBonus: 13,
       },
       {
         frameId: 2,
         rolledPins: [10],
-        frameScore: 19,
+        frameScore: 10,
         isStrike: true,
+        strikeBonus: 9,
       },
       { frameId: 3, rolledPins: [3, 6], frameScore: 9 },
     ]);
