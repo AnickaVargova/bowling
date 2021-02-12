@@ -3,8 +3,10 @@ let frameNumber = 1;
 let gameOver = false;
 let scoreTable = [];
 
-function newGame() {
-  console.log("Game started.");
+function newGame(verbose = false) {
+  if (verbose) {
+    console.log("Game started.");
+  }
   scoreTable = [];
   frameNumber = 1;
   score = 0;
@@ -16,23 +18,22 @@ function getCurrentState() {
   return scoreTable;
 }
 
-function getScore() {
+function getScore(verbose = false) {
   score = scoreTable.reduce((total, current) => total + current.frameScore, 0);
-  if (!gameOver) {
-    console.log(
-      `Your current score is ${score}. It may not reflect spare and strike bonuses for the last two rounds.`
-    );
-  } else {
-    console.log(`Your total score is ${score}.`);
-  }
 
+  if (verbose) {
+    if (!gameOver) {
+      console.log(
+        `Your current score is ${score}. It may not reflect spare and strike bonuses for the last two rounds.`
+      );
+    } else {
+      console.log(`Your total score is ${score}.`);
+    }
+  }
   return score;
 }
 
 function isGameFinished() {
-  gameOver
-    ? console.log("Game is finished.")
-    : console.log("Game is not finished yet.");
   return gameOver;
 }
 
