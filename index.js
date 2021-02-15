@@ -8,7 +8,7 @@ const {
 } = require("./bowlingScorer");
 
 //Usage example: run 'node index' in your terminal.
-newGame(true);
+newGame();
 throwBowl(1);
 throwBowl(3);
 throwBowl(5);
@@ -16,5 +16,5 @@ throwBowl(5);
 throwBowl(3);
 
 console.log(getCurrentState());
-console.log(isGameFinished(true));
-console.log(getScore(true));
+console.log(isGameFinished());
+console.log(getScore());
