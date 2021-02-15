@@ -7,7 +7,7 @@ const {
   throwBowl,
 } = require("./bowlingScorer");
 
-const testSada0 = [
+const testSet0 = [
   5,
   5,
   5,
@@ -31,15 +31,18 @@ const testSada0 = [
   5,
 ];
 //150
-const testSada1 = [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10];
+const testSet1 = [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10];
 //300
-const testSada2 = [9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0];
+const testSet2 = [9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0];
 //90
-const testSada3 = [9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9];
+const testSet3 = [9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9];
 
-const testSada4 = [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10];
-const testSada5 = [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5];
-const testSada6 = [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10];
+const testSet4 = [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10];
+const testSet5 = [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5];
+const testSet6 = [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10];
+const testSet7 = [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 12];
+const testSet8 = [5, 5, 10, 5, 5, 10, 5, 5, 10, 5, 5, 10, 5, 5, 10, 5, 5];
+//200
 
 function testSequence(sequence) {
   newGame();
@@ -66,35 +69,38 @@ function testCurrentState(arr) {
 }
 
 describe("testScore", () => {
-  test("10 pairs with spare and a final", () => {
-    expect(testSequence(testSada0)).toBe(150);
+  test("10 pairs with spares and a final", () => {
+    expect(testSequence(testSet0)).toBe(150);
   });
   test("maximum sequence", () => {
-    expect(testSequence(testSada1)).toBe(300);
+    expect(testSequence(testSet1)).toBe(300);
   });
   test("ordinary sequence", () => {
-    expect(testSequence(testSada2)).toBe(90);
+    expect(testSequence(testSet2)).toBe(90);
+  });
+  test("sequence with mixed spares and strikes", () => {
+    expect(testSequence(testSet8)).toBe(200);
   });
 });
 
 describe("gameFinished", () => {
-  test("10 pairs with spare and a final", () => {
-    expect(testGameFinished(testSada0)).toBe(true);
+  test("10 pairs with spares and a final", () => {
+    expect(testGameFinished(testSet0)).toBe(true);
   });
   test("maximum sequence", () => {
-    expect(testGameFinished(testSada1)).toBe(true);
+    expect(testGameFinished(testSet1)).toBe(true);
   });
   test("ordinary sequence ", () => {
-    expect(testGameFinished(testSada2)).toBe(true);
+    expect(testGameFinished(testSet2)).toBe(true);
   });
   test("incomplete ordinary sequence", () => {
-    expect(testGameFinished(testSada3)).toBe(false);
+    expect(testGameFinished(testSet3)).toBe(false);
   });
   test("incomplete maximum sequence", () => {
-    expect(testGameFinished(testSada4)).toBe(false);
+    expect(testGameFinished(testSet4)).toBe(false);
   });
-  test("10 pairs with a spare without a final", () => {
-    expect(testGameFinished(testSada5)).toBe(false);
+  test("10 pairs with spares without a final", () => {
+    expect(testGameFinished(testSet5)).toBe(false);
   });
 });
 
@@ -148,7 +154,20 @@ describe("currentState", () => {
       { frameId: 3, rolledPins: [3, 6], frameScore: 9 },
     ]);
   });
+});
+
+describe("error messages", () => {
   test("sequence exceeding maximum length", () => {
-    expect(() => testCurrentState(testSada6)).toThrow("Game is over.");
+    expect(() => testCurrentState(testSet6)).toThrow("Game is over.");
+  });
+  test("maximum number of pins exceeded - simple frame", () => {
+    expect(() => testCurrentState([3, 8])).toThrow(
+      "Maximum number of pins is exceeded."
+    );
+  });
+  test("maximum number of pins exceeded - final", () => {
+    expect(() => testCurrentState(testSet7)).toThrow(
+      "Maximum number of pins is exceeded."
+    );
   });
 });

@@ -44,7 +44,7 @@ function getScore(verbose = false) {
         return `Your current score is ${score}. The strike bonus for the last two frames is not complete.`;
       } else if (scoreWithoutPreviousFrameBonus) {
         return `Your current score is ${score}. The strike bonus for the previous frame is not complete.`;
-      }
+      } else return "";
     } else {
       return `Your total score is ${score}.`;
     }
@@ -117,17 +117,14 @@ function throwBowl(count) {
 
       if (getPrevious().isSpare) {
         getPrevious().spareBonus = count;
-        // getPrevious().frameScore += count;
       }
 
       if (getPrevious().isStrike && getBeforePrevious().isStrike) {
-        // getBeforePrevious().frameScore += count;
         getBeforePrevious().strikeBonus += count;
       }
     }
 
     if (getPrevious().isStrike && currentFrame.rolledPins.length <= 2) {
-      // getPrevious().frameScore += count;
       getPrevious().strikeBonus
         ? (getPrevious().strikeBonus += count)
         : (getPrevious().strikeBonus = count);
