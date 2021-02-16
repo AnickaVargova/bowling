@@ -18,14 +18,15 @@ function getCurrentState() {
 }
 
 function getScore(verbose = false) {
-  score = scoreTable.reduce(
-    (total, current) =>
-      total +
-      current.frameScore +
-      (current.spareBonus ? current.spareBonus : 0) +
-      (current.strikeBonus ? current.strikeBonus : 0),
-    0
-  );
+  score = scoreTable
+    .map(
+      (current) =>
+        current.frameScore +
+        (current.spareBonus ?? 0) +
+        (current.strikeBonus ?? 0)
+    )
+    .reduce((total, current) => total + current, 0);
+
   let scoreWithoutCurrentFrameBonus = Boolean(
     getCurrent().isSpare || (getCurrent().isStrike && !getPrevious().isStrike)
   );
@@ -81,63 +82,62 @@ function throwBowl(count) {
 
   if (gameOver) {
     throw new Error("Game is over.");
+  }
+  if (
+    isTenth ||
+    (currentFrame &&
+      currentFrame.rolledPins.length < 2 &&
+      !currentFrame.isStrike)
+  ) {
+    currentFrame.rolledPins.push(count);
+    currentFrame.frameScore += count;
+
+    if (currentFrame.frameScore === 10) {
+      currentFrame.isSpare = true;
+    }
+    if (frameNumber < 10) {
+      frameNumber++;
+    } else if (
+      (!currentFrame.isSpare && !currentFrame.isStrike) ||
+      currentFrame.rolledPins.length === 3
+    ) {
+      gameOver = true;
+    }
   } else {
-    if (
-      (!isTenth &&
-        currentFrame &&
-        currentFrame.rolledPins.length < 2 &&
-        !currentFrame.isStrike) ||
-      isTenth
-    ) {
-      currentFrame.rolledPins.push(count);
-      currentFrame.frameScore += count;
+    let frame = {
+      frameId: frameNumber,
+      rolledPins: [count],
+      frameScore: count,
+    };
+    if (count === 10) {
+      frame.isStrike = true;
+      frameNumber++;
+    }
+    scoreTable.push(frame);
 
-      if (currentFrame.frameScore === 10) {
-        currentFrame.isSpare = true;
-      }
-      if (frameNumber < 10) {
-        frameNumber++;
-      } else if (
-        (!currentFrame.isSpare && !currentFrame.isStrike) ||
-        currentFrame.rolledPins.length === 3
-      ) {
-        gameOver = true;
-      }
-    } else {
-      let frame = {
-        frameId: frameNumber,
-        rolledPins: [count],
-        frameScore: count,
-      };
-      if (count === 10) {
-        frame.isStrike = true;
-        frameNumber++;
-      }
-      scoreTable.push(frame);
-
-      if (getPrevious().isSpare) {
-        getPrevious().spareBonus = count;
-      }
-
-      if (getPrevious().isStrike && getBeforePrevious().isStrike) {
-        getBeforePrevious().strikeBonus += count;
-      }
+    if (getPrevious().isSpare) {
+      getPrevious().spareBonus = count;
     }
 
-    if (getPrevious().isStrike && currentFrame.rolledPins.length <= 2) {
-      getPrevious().strikeBonus
-        ? (getPrevious().strikeBonus += count)
-        : (getPrevious().strikeBonus = count);
-    }
-
-    if (
-      (!isTenth && currentFrame.frameScore > 10) ||
-      (isTenth && currentFrame.frameScore > 30)
-    ) {
-      throw new Error("Maximum number of pins is exceeded.");
+    if (getPrevious().isStrike && getBeforePrevious().isStrike) {
+      getBeforePrevious().strikeBonus += count;
     }
   }
+
+  if (getPrevious().isStrike && currentFrame.rolledPins.length <= 2) {
+    getPrevious().strikeBonus
+      ? (getPrevious().strikeBonus += count)
+      : (getPrevious().strikeBonus = count);
+  }
+
+  if (
+    (!isTenth && currentFrame.frameScore > 10) ||
+    (isTenth && currentFrame.frameScore > 30)
+  ) {
+    throw new Error("Maximum number of pins is exceeded.");
+  }
 }
+
 module.exports = {
   newGame,
   getCurrentState,
