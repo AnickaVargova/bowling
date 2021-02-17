@@ -1,6 +1,6 @@
 let scoreTable = [];
 
-function newGame(verbose = false) {
+function newGame(verbose) {
   if (verbose) {
     console.log("Game started.");
   }
@@ -11,13 +11,18 @@ function getCurrentState() {
   return scoreTable;
 }
 
-function getScore(verbose = false) {
-  let score = scoreTable
+function getScore(verbose) {
+  let score = 0;
+  if (scoreTable.length === 0) {
+    return score;
+  }
+
+  score = scoreTable
     .map(
       (current) =>
         current.frameScore +
-        (current.spareBonus ?? 0) +
-        (current.strikeBonus ?? 0)
+        (current.spareBonus || 0) +
+        (current.strikeBonus || 0)
     )
     .reduce((total, current) => total + current, 0);
 
@@ -29,7 +34,7 @@ function getScore(verbose = false) {
     isStrike(getCurrent()) && isStrike(getPrevious())
   );
   let scoreWithoutPreviousFrameBonus = Boolean(
-    getCurrent().rolledPins.length === 1 && isStrike(getPrevious())
+    getCurrent()?.rolledPins.length === 1 && isStrike(getPrevious())
   );
 
   if (verbose) {
@@ -64,41 +69,36 @@ function isGameFinished() {
 }
 
 function getCurrent() {
-  return scoreTable.length && scoreTable[scoreTable.length - 1];
+  return scoreTable.length ? scoreTable[scoreTable.length - 1] : undefined;
 }
 
 function getPrevious() {
-  return scoreTable.length > 1 && scoreTable[scoreTable.length - 2];
+  return scoreTable.length > 1 ? scoreTable[scoreTable.length - 2] : undefined;
 }
 
 function getBeforePrevious() {
-  return scoreTable.length > 2 && scoreTable[scoreTable.length - 3];
+  return scoreTable.length > 2 ? scoreTable[scoreTable.length - 3] : undefined;
 }
 
-function getFrameNumber() {
+function setFrameNumber() {
   return scoreTable.length + 1;
 }
 
 function isSpare(frame) {
-  if (
-    frame.rolledPins &&
-    frame.rolledPins.length === 2 &&
-    frame.frameScore === 10
-  ) {
+  if (frame?.rolledPins.length === 2 && frame.frameScore === 10) {
     return true;
   }
   return false;
 }
 
 function isStrike(frame) {
-  if (frame.rolledPins && frame.rolledPins[0] === 10) {
+  if (frame?.rolledPins && frame.rolledPins[0] === 10) {
     return true;
   }
   return false;
 }
 
 function throwBowl(count) {
-  let currentFrame = getCurrent();
   let isTenth = Boolean(scoreTable.length === 10);
 
   if (isGameFinished()) {
@@ -106,15 +106,13 @@ function throwBowl(count) {
   }
   if (
     isTenth ||
-    (currentFrame &&
-      currentFrame.rolledPins.length < 2 &&
-      !isStrike(currentFrame))
+    (getCurrent()?.rolledPins.length < 2 && !isStrike(getCurrent()))
   ) {
-    currentFrame.rolledPins.push(count);
-    currentFrame.frameScore += count;
+    getCurrent().rolledPins.push(count);
+    getCurrent().frameScore += count;
   } else {
     let frame = {
-      frameId: getFrameNumber(),
+      frameId: setFrameNumber(),
       rolledPins: [count],
       frameScore: count,
     };
@@ -130,15 +128,15 @@ function throwBowl(count) {
     }
   }
 
-  if (isStrike(getPrevious()) && currentFrame.rolledPins.length <= 2) {
+  if (isStrike(getPrevious()) && getCurrent()?.rolledPins.length <= 2) {
     getPrevious().strikeBonus
       ? (getPrevious().strikeBonus += count)
       : (getPrevious().strikeBonus = count);
   }
 
   if (
-    (!isTenth && currentFrame.frameScore > 10) ||
-    (isTenth && currentFrame.frameScore > 30)
+    (!isTenth && getCurrent()?.frameScore > 10) ||
+    (isTenth && getCurrent()?.frameScore > 30)
   ) {
     throw new Error("Maximum number of pins is exceeded.");
   }
