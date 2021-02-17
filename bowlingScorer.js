@@ -22,13 +22,14 @@ function getScore(verbose = false) {
     .reduce((total, current) => total + current, 0);
 
   let scoreWithoutCurrentFrameBonus = Boolean(
-    isSpare(getCurrent()) || (getCurrent().isStrike && !getPrevious().isStrike)
+    isSpare(getCurrent()) ||
+      (isStrike(getCurrent()) && !isStrike(getPrevious()))
   );
   let scoreWithoutTwoFrameBonuses = Boolean(
-    getCurrent().isStrike && getPrevious().isStrike
+    isStrike(getCurrent()) && isStrike(getPrevious())
   );
   let scoreWithoutPreviousFrameBonus = Boolean(
-    getCurrent().rolledPins.length === 1 && getPrevious().isStrike
+    getCurrent().rolledPins.length === 1 && isStrike(getPrevious())
   );
 
   if (verbose) {
@@ -52,7 +53,7 @@ function isGameFinished() {
   if (
     scoreTable.length === 10 &&
     ((!isSpare(getCurrent()) &&
-      !getCurrent().isStrike &&
+      !isStrike(getCurrent()) &&
       getCurrent().rolledPins.length === 2) ||
       getCurrent().rolledPins.length === 3)
   ) {
@@ -89,6 +90,13 @@ function isSpare(frame) {
   return false;
 }
 
+function isStrike(frame) {
+  if (frame.rolledPins && frame.rolledPins[0] === 10) {
+    return true;
+  }
+  return false;
+}
+
 function throwBowl(count) {
   let currentFrame = getCurrent();
   let isTenth = Boolean(scoreTable.length === 10);
@@ -100,7 +108,7 @@ function throwBowl(count) {
     isTenth ||
     (currentFrame &&
       currentFrame.rolledPins.length < 2 &&
-      !currentFrame.isStrike)
+      !isStrike(currentFrame))
   ) {
     currentFrame.rolledPins.push(count);
     currentFrame.frameScore += count;
@@ -110,21 +118,19 @@ function throwBowl(count) {
       rolledPins: [count],
       frameScore: count,
     };
-    if (count === 10) {
-      frame.isStrike = true;
-    }
+
     scoreTable.push(frame);
 
     if (isSpare(getPrevious())) {
       getPrevious().spareBonus = count;
     }
 
-    if (getPrevious().isStrike && getBeforePrevious().isStrike) {
+    if (isStrike(getPrevious()) && isStrike(getBeforePrevious())) {
       getBeforePrevious().strikeBonus += count;
     }
   }
 
-  if (getPrevious().isStrike && currentFrame.rolledPins.length <= 2) {
+  if (isStrike(getPrevious()) && currentFrame.rolledPins.length <= 2) {
     getPrevious().strikeBonus
       ? (getPrevious().strikeBonus += count)
       : (getPrevious().strikeBonus = count);

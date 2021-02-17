@@ -7,13 +7,19 @@ const {
   throwBowl,
 } = require("./bowlingScorer");
 
-//Usage example: run 'node index' in your terminal.
+const testSet1 = [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10];
+//300
 newGame();
-throwBowl(1);
-throwBowl(3);
-throwBowl(5);
-throwBowl(5);
-throwBowl(3);
+for (let item of testSet1) {
+  throwBowl(item);
+}
+//Usage example: run 'node index' in your terminal.
+
+// throwBowl(1);
+// throwBowl(3);
+// throwBowl(5);
+// throwBowl(5);
+// throwBowl(3);
 
 console.log(getCurrentState());
 console.log(isGameFinished());
