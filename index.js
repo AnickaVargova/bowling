@@ -17,4 +17,4 @@ throwBowl(3);
 
 console.log(getCurrentState());
 console.log(isGameFinished());
-console.log(getScore());
+console.log(getScore(true));

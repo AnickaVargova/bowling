@@ -1,5 +1,4 @@
 let score = 0;
-let gameOver = false;
 let scoreTable = [];
 
 function newGame(verbose = false) {
@@ -8,7 +7,6 @@ function newGame(verbose = false) {
   }
   scoreTable = [];
   score = 0;
-  gameOver = false;
 }
 
 function getCurrentState() {
@@ -36,14 +34,14 @@ function getScore(verbose = false) {
   );
 
   if (verbose) {
-    if (!gameOver) {
+    if (!isGameFinished()) {
       if (scoreWithoutCurrentFrameBonus) {
         return `Your current score is ${score}. It doesn't include the bonus for the last frame.`;
       } else if (scoreWithoutTwoFrameBonuses) {
         return `Your current score is ${score}. The strike bonus for the last two frames is not complete.`;
       } else if (scoreWithoutPreviousFrameBonus) {
         return `Your current score is ${score}. The strike bonus for the previous frame is not complete.`;
-      } else return "";
+      } else return `Your current score is ${score}.`;
     } else {
       return `Your total score is ${score}.`;
     }
@@ -52,18 +50,22 @@ function getScore(verbose = false) {
   }
 }
 
-function isGameFinished(verbose = false) {
-  if (verbose) {
-    return gameOver ? "Game is finished." : "Game is not finished.";
+function isGameFinished() {
+  if (
+    scoreTable.length === 10 &&
+    ((!getCurrent().isSpare &&
+      !getCurrent().isStrike &&
+      getCurrent().rolledPins.length === 2) ||
+      getCurrent().rolledPins.length === 3)
+  ) {
+    return true;
   } else {
-    return gameOver;
+    return false;
   }
 }
 
 function getCurrent() {
-  return (
-    scoreTable.length && scoreTable[scoreTable.length && scoreTable.length - 1]
-  );
+  return scoreTable.length && scoreTable[scoreTable.length - 1];
 }
 
 function getPrevious() {
@@ -82,7 +84,7 @@ function throwBowl(count) {
   let currentFrame = getCurrent();
   let isTenth = Boolean(scoreTable.length === 10);
 
-  if (gameOver) {
+  if (isGameFinished()) {
     throw new Error("Game is over.");
   }
   if (
@@ -96,13 +98,6 @@ function throwBowl(count) {
 
     if (currentFrame.frameScore === 10) {
       currentFrame.isSpare = true;
-    }
-
-    if (
-      (isTenth && !currentFrame.isSpare && !currentFrame.isStrike) ||
-      currentFrame.rolledPins.length === 3
-    ) {
-      gameOver = true;
     }
   } else {
     let frame = {
