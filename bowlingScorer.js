@@ -1,5 +1,4 @@
 let score = 0;
-let frameNumber = 1;
 let gameOver = false;
 let scoreTable = [];
 
@@ -8,7 +7,6 @@ function newGame(verbose = false) {
     console.log("Game started.");
   }
   scoreTable = [];
-  frameNumber = 1;
   score = 0;
   gameOver = false;
 }
@@ -76,6 +74,10 @@ function getBeforePrevious() {
   return scoreTable.length > 2 && scoreTable[scoreTable.length - 3];
 }
 
+function getFrameNumber() {
+  return scoreTable.length + 1;
+}
+
 function throwBowl(count) {
   let currentFrame = getCurrent();
   let isTenth = Boolean(scoreTable.length === 10);
@@ -95,23 +97,21 @@ function throwBowl(count) {
     if (currentFrame.frameScore === 10) {
       currentFrame.isSpare = true;
     }
-    if (frameNumber < 10) {
-      frameNumber++;
-    } else if (
-      (!currentFrame.isSpare && !currentFrame.isStrike) ||
+
+    if (
+      (isTenth && !currentFrame.isSpare && !currentFrame.isStrike) ||
       currentFrame.rolledPins.length === 3
     ) {
       gameOver = true;
     }
   } else {
     let frame = {
-      frameId: frameNumber,
+      frameId: getFrameNumber(),
       rolledPins: [count],
       frameScore: count,
     };
     if (count === 10) {
       frame.isStrike = true;
-      frameNumber++;
     }
     scoreTable.push(frame);
 
