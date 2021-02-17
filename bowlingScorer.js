@@ -1,4 +1,3 @@
-let score = 0;
 let scoreTable = [];
 
 function newGame(verbose = false) {
@@ -6,7 +5,6 @@ function newGame(verbose = false) {
     console.log("Game started.");
   }
   scoreTable = [];
-  score = 0;
 }
 
 function getCurrentState() {
@@ -14,7 +12,7 @@ function getCurrentState() {
 }
 
 function getScore(verbose = false) {
-  score = scoreTable
+  let score = scoreTable
     .map(
       (current) =>
         current.frameScore +
