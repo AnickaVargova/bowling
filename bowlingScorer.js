@@ -22,7 +22,7 @@ function getScore(verbose = false) {
     .reduce((total, current) => total + current, 0);
 
   let scoreWithoutCurrentFrameBonus = Boolean(
-    getCurrent().isSpare || (getCurrent().isStrike && !getPrevious().isStrike)
+    isSpare(getCurrent()) || (getCurrent().isStrike && !getPrevious().isStrike)
   );
   let scoreWithoutTwoFrameBonuses = Boolean(
     getCurrent().isStrike && getPrevious().isStrike
@@ -51,7 +51,7 @@ function getScore(verbose = false) {
 function isGameFinished() {
   if (
     scoreTable.length === 10 &&
-    ((!getCurrent().isSpare &&
+    ((!isSpare(getCurrent()) &&
       !getCurrent().isStrike &&
       getCurrent().rolledPins.length === 2) ||
       getCurrent().rolledPins.length === 3)
@@ -78,6 +78,17 @@ function getFrameNumber() {
   return scoreTable.length + 1;
 }
 
+function isSpare(frame) {
+  if (
+    frame.rolledPins &&
+    frame.rolledPins.length === 2 &&
+    frame.frameScore === 10
+  ) {
+    return true;
+  }
+  return false;
+}
+
 function throwBowl(count) {
   let currentFrame = getCurrent();
   let isTenth = Boolean(scoreTable.length === 10);
@@ -93,10 +104,6 @@ function throwBowl(count) {
   ) {
     currentFrame.rolledPins.push(count);
     currentFrame.frameScore += count;
-
-    if (currentFrame.frameScore === 10) {
-      currentFrame.isSpare = true;
-    }
   } else {
     let frame = {
       frameId: getFrameNumber(),
@@ -108,7 +115,7 @@ function throwBowl(count) {
     }
     scoreTable.push(frame);
 
-    if (getPrevious().isSpare) {
+    if (isSpare(getPrevious())) {
       getPrevious().spareBonus = count;
     }
 

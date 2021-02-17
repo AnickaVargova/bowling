@@ -117,7 +117,6 @@ describe("currentState", () => {
         frameId: 1,
         rolledPins: [5, 5],
         frameScore: 10,
-        isSpare: true,
         spareBonus: 3,
       },
       { frameId: 2, rolledPins: [3, 6], frameScore: 9 },
