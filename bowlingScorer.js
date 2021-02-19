@@ -1,21 +1,17 @@
+const { maxNumberOfPins, VERBOSE } = require("./config");
 let scoreTable = [];
-const VERBOSE = false;
 
-function newGame(_verbose) {
-  _verbose = VERBOSE;
-  if (_verbose) {
+const newGame = () => {
+  if (VERBOSE) {
     console.log("Game started.");
   }
   scoreTable = [];
-}
+};
 
-function getCurrentState() {
-  return scoreTable;
-}
+const getCurrentState = () => scoreTable;
 
-function getScore(_verbose) {
+const getScore = () => {
   let score = 0;
-  _verbose = VERBOSE;
   if (scoreTable.length === 0) {
     return score;
   }
@@ -40,7 +36,7 @@ function getScore(_verbose) {
     getCurrent()?.rolledPins.length === 1 && isStrike(getPrevious())
   );
 
-  if (_verbose) {
+  if (VERBOSE) {
     if (!isGameFinished()) {
       if (scoreWithoutCurrentFrameBonus) {
         console.log(
@@ -60,43 +56,29 @@ function getScore(_verbose) {
     }
   }
   return score;
-}
+};
 
-function isGameFinished() {
-  return (
-    scoreTable.length === 10 &&
-    ((!isSpare(getCurrent()) &&
-      !isStrike(getCurrent()) &&
-      getCurrent().rolledPins.length === 2) ||
-      getCurrent().rolledPins.length === 3)
-  );
-}
+const isGameFinished = () =>
+  scoreTable.length === 10 &&
+  ((!isSpare(getCurrent()) &&
+    !isStrike(getCurrent()) &&
+    getCurrent().rolledPins.length === 2) ||
+    getCurrent().rolledPins.length === 3);
 
-function getCurrent() {
-  return scoreTable.length ? scoreTable[scoreTable.length - 1] : null;
-}
+const getCurrent = () => scoreTable[scoreTable.length - 1];
 
-function getPrevious() {
-  return scoreTable.length > 1 ? scoreTable[scoreTable.length - 2] : null;
-}
+const getPrevious = () => scoreTable[scoreTable.length - 2];
 
-function getBeforePrevious() {
-  return scoreTable.length > 2 ? scoreTable[scoreTable.length - 3] : null;
-}
+const getBeforePrevious = () => scoreTable[scoreTable.length - 3];
 
-function setFrameNumber() {
-  return scoreTable.length + 1;
-}
+const setFrameNumber = () => scoreTable.length + 1;
 
-function isSpare(frame) {
-  return frame?.rolledPins.length === 2 && frame.frameScore === 10;
-}
+const isSpare = (frame) =>
+  frame?.rolledPins.length === 2 && frame.frameScore === maxNumberOfPins;
 
-function isStrike(frame) {
-  return frame?.rolledPins && frame.rolledPins[0] === 10;
-}
+const isStrike = (frame) => frame?.rolledPins?.[0] === maxNumberOfPins;
 
-function throwBowl(count) {
+const throwBowl = (count) => {
   let isTenth = Boolean(scoreTable.length === 10);
 
   if (isGameFinished()) {
@@ -133,19 +115,22 @@ function throwBowl(count) {
   }
 
   if (
-    (getCurrent()?.rolledPins.length === 1 && getCurrent()?.frameScore > 10) ||
+    getCurrent()?.rolledPins?.[0] > maxNumberOfPins ||
     (getCurrent()?.rolledPins.length === 2 &&
       ((!(isTenth && isStrike(getCurrent())) &&
-        getCurrent()?.frameScore > 10) ||
-        (isStrike(getCurrent()) && getCurrent()?.frameScore > 20))) ||
+        getCurrent()?.frameScore > maxNumberOfPins) ||
+        (isStrike(getCurrent()) &&
+          getCurrent()?.frameScore > 2 * maxNumberOfPins))) ||
     (isTenth &&
-      ((isStrike(getCurrent()) && getCurrent()?.frameScore > 30) ||
-        (getCurrent().rolledPins[0] + getCurrent().rolledPins[1] === 10 &&
-          getCurrent()?.frameScore > 20)))
+      ((isStrike(getCurrent()) &&
+        getCurrent()?.frameScore > 3 * maxNumberOfPins) ||
+        (getCurrent().rolledPins[0] + getCurrent().rolledPins[1] ===
+          maxNumberOfPins &&
+          getCurrent()?.frameScore > 2 * maxNumberOfPins)))
   ) {
     throw new Error("Maximum number of pins is exceeded.");
   }
-}
+};
 
 module.exports = {
   newGame,
@@ -153,5 +138,4 @@ module.exports = {
   getScore,
   isGameFinished,
   throwBowl,
-  VERBOSE,
 };
