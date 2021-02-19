@@ -133,7 +133,11 @@ function throwBowl(count) {
   }
 
   if (
-    (!isTenth && getCurrent()?.frameScore > 10) ||
+    (getCurrent()?.rolledPins.length === 1 && getCurrent()?.frameScore > 10) ||
+    (getCurrent()?.rolledPins.length === 2 &&
+      ((!(isTenth && isStrike(getCurrent())) &&
+        getCurrent()?.frameScore > 10) ||
+        (isStrike(getCurrent()) && getCurrent()?.frameScore > 20))) ||
     (isTenth && getCurrent()?.frameScore > 30)
   ) {
     throw new Error("Maximum number of pins is exceeded.");
