@@ -5,11 +5,10 @@ const {
   getScore,
   isGameFinished,
   throwBowl,
+  VERBOSE,
 } = require("./bowlingScorer");
 
-const verbose = true;
-
-newGame(verbose);
+newGame(VERBOSE);
 
 //Usage example: run 'node index' in your terminal.
 
@@ -21,4 +20,4 @@ throwBowl(3);
 
 console.log(getCurrentState());
 console.log(isGameFinished());
-console.log(getScore(verbose));
+console.log(getScore(VERBOSE));

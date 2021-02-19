@@ -5,6 +5,7 @@ const {
   getScore,
   isGameFinished,
   throwBowl,
+  VERBOSE,
 } = require("./bowlingScorer");
 
 const testSet0 = [
@@ -45,15 +46,16 @@ const testSet8 = [5, 5, 10, 5, 5, 10, 5, 5, 10, 5, 5, 10, 5, 5, 10, 5, 5];
 //200
 
 function testSequence(sequence) {
-  newGame();
+  newGame(VERBOSE);
+
   for (let item of sequence) {
     throwBowl(item);
   }
-  return getScore();
+  return getScore(VERBOSE);
 }
 
 function testGameFinished(sequence) {
-  newGame();
+  newGame(VERBOSE);
   for (let item of sequence) {
     throwBowl(item);
   }
@@ -61,7 +63,7 @@ function testGameFinished(sequence) {
 }
 
 function testCurrentState(arr) {
-  newGame();
+  newGame(VERBOSE);
   for (let item of arr) {
     throwBowl(item);
   }

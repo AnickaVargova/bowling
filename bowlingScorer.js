@@ -1,7 +1,9 @@
 let scoreTable = [];
+const VERBOSE = false;
 
-function newGame(verbose) {
-  if (verbose) {
+function newGame(_verbose) {
+  _verbose = VERBOSE;
+  if (_verbose) {
     console.log("Game started.");
   }
   scoreTable = [];
@@ -11,8 +13,9 @@ function getCurrentState() {
   return scoreTable;
 }
 
-function getScore(verbose) {
+function getScore(_verbose) {
   let score = 0;
+  _verbose = VERBOSE;
   if (scoreTable.length === 0) {
     return score;
   }
@@ -37,47 +40,48 @@ function getScore(verbose) {
     getCurrent()?.rolledPins.length === 1 && isStrike(getPrevious())
   );
 
-  if (verbose) {
+  if (_verbose) {
     if (!isGameFinished()) {
       if (scoreWithoutCurrentFrameBonus) {
-        return `Your current score is ${score}. It doesn't include the bonus for the last frame.`;
+        console.log(
+          `Your current score is ${score}. It doesn't include the bonus for the last frame.`
+        );
       } else if (scoreWithoutTwoFrameBonuses) {
-        return `Your current score is ${score}. The strike bonus for the last two frames is not complete.`;
+        console.log(
+          `Your current score is ${score}. The strike bonus for the last two frames is not complete.`
+        );
       } else if (scoreWithoutPreviousFrameBonus) {
-        return `Your current score is ${score}. The strike bonus for the previous frame is not complete.`;
-      } else return `Your current score is ${score}.`;
+        console.log(
+          `Your current score is ${score}. The strike bonus for the previous frame is not complete.`
+        );
+      } else console.log(`Your current score is ${score}.`);
     } else {
-      return `Your total score is ${score}.`;
+      console.log(`Your total score is ${score}.`);
     }
-  } else {
-    return score;
   }
+  return score;
 }
 
 function isGameFinished() {
-  if (
+  return (
     scoreTable.length === 10 &&
     ((!isSpare(getCurrent()) &&
       !isStrike(getCurrent()) &&
       getCurrent().rolledPins.length === 2) ||
       getCurrent().rolledPins.length === 3)
-  ) {
-    return true;
-  } else {
-    return false;
-  }
+  );
 }
 
 function getCurrent() {
-  return scoreTable.length ? scoreTable[scoreTable.length - 1] : undefined;
+  return scoreTable.length ? scoreTable[scoreTable.length - 1] : null;
 }
 
 function getPrevious() {
-  return scoreTable.length > 1 ? scoreTable[scoreTable.length - 2] : undefined;
+  return scoreTable.length > 1 ? scoreTable[scoreTable.length - 2] : null;
 }
 
 function getBeforePrevious() {
-  return scoreTable.length > 2 ? scoreTable[scoreTable.length - 3] : undefined;
+  return scoreTable.length > 2 ? scoreTable[scoreTable.length - 3] : null;
 }
 
 function setFrameNumber() {
@@ -85,17 +89,11 @@ function setFrameNumber() {
 }
 
 function isSpare(frame) {
-  if (frame?.rolledPins.length === 2 && frame.frameScore === 10) {
-    return true;
-  }
-  return false;
+  return frame?.rolledPins.length === 2 && frame.frameScore === 10;
 }
 
 function isStrike(frame) {
-  if (frame?.rolledPins && frame.rolledPins[0] === 10) {
-    return true;
-  }
-  return false;
+  return frame?.rolledPins && frame.rolledPins[0] === 10;
 }
 
 function throwBowl(count) {
@@ -148,4 +146,5 @@ module.exports = {
   getScore,
   isGameFinished,
   throwBowl,
+  VERBOSE,
 };
