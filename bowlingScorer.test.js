@@ -44,6 +44,31 @@ const testSet6 = [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10];
 const testSet7 = [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 12];
 const testSet8 = [5, 5, 10, 5, 5, 10, 5, 5, 10, 5, 5, 10, 5, 5, 10, 5, 5];
 //200
+const testSet9 = [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 12];
+const testSet10 = [9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 0, 9, 2];
+const testSet11 = [
+  9,
+  0,
+  9,
+  0,
+  9,
+  0,
+  9,
+  0,
+  9,
+  0,
+  9,
+  0,
+  9,
+  0,
+  9,
+  0,
+  9,
+  0,
+  9,
+  1,
+  11,
+];
 
 function testSequence(sequence) {
   newGame(VERBOSE);
@@ -163,8 +188,24 @@ describe("error messages", () => {
       "Maximum number of pins is exceeded."
     );
   });
-  test("maximum number of pins exceeded - final", () => {
+  test("maximum number of pins exceeded - maximum sequence", () => {
     expect(() => testCurrentState(testSet7)).toThrow(
+      "Maximum number of pins is exceeded."
+    );
+  });
+
+  test("maximum number of pins exceeded - incomplete maximum sequence, last frame, second throw", () => {
+    expect(() => testCurrentState(testSet9)).toThrow(
+      "Maximum number of pins is exceeded."
+    );
+  });
+  test("maximum number of pins exceeded - ordinary sequence", () => {
+    expect(() => testCurrentState(testSet10)).toThrow(
+      "Maximum number of pins is exceeded."
+    );
+  });
+  test("maximum number of pins exceeded - sequence with spare in tenth frame", () => {
+    expect(() => testCurrentState(testSet11)).toThrow(
       "Maximum number of pins is exceeded."
     );
   });
